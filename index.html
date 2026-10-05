@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Attendance Calculator</title>
+  <!-- TODO: maybe move this to an external css file later if it gets too big, but inline for now is fine i guess -->
+  <style>
+    /* basic reset, copied from stackoverflow lol */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, sans-serif; /* kept it simple instead of importing google fonts */
+      background-color: #f4f4f9;
+      color: #333;
+      padding: 20px;
+      text-align: center;
+    }
+
+    h1 {
+      margin-top: 10px;
+      color: #2c3e50;
+    }
+
+    .sub {
+      color: #666;
+      margin-bottom: 25px;
+      font-size: 14px;
+    }
+
+    .cards {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      max-width: 1000px;
+      margin: 0 auto 30px auto;
+    }
+
+    .card {
+      background: #ffffff;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 20px;
+      width: 280px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      text-align: left;
+    }
+
+    .card h2 {
+      font-size: 18px;
+      margin-bottom: 15px;
+      color: #34495e;
+      border-bottom: 2px solid #eee;
+      padding-bottom: 5px;
+    }
+
+    label {
+      display: block;
+      font-size: 12px;
+      color: #555;
+      margin-top: 10px;
+      margin-bottom: 3px;
+    }
+
+    input[type="number"] {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+
+    /* quick hack so number inputs don't look weird on some browsers */
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    .result {
+      margin-top: 15px;
+      font-size: 13px;
+      font-weight: bold;
+      min-height: 20px;
+    }
+
+    #calc-btn {
+      background-color: #3498db;
+      color: white;
+      border: none;
+      padding: 12px 30px;
+      font-size: 16px;
+      border-radius: 5px;
+      cursor: pointer;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      transition: background 0.2s;
+    }
+
+    #calc-btn:hover {
+      background-color: #2980b9;
+    }
+
+    /* helper classes for JS output */
+    .safe { color: #27ae60; }
+    .danger { color: #c0392b; }
+  </style>
+</head>
+<body>
+
+  <h1>Attendance Calculator</h1>
+  <p class="sub">Minimum 75% attendance needed in every subject (dont skip too much!!)</p>
+
+  <div class="cards">
+    <!-- ICP Subject -->
+    <div class="card">
+      <h2>ICP</h2>
+      <label for="icp-total">Total sessions so far</label>
+      <input type="number" id="icp-total" placeholder="e.g. 40">
+      <label for="icp-attended">Sessions attended</label>
+      <input type="number" id="icp-attended" placeholder="e.g. 34">
+      <div id="icp-result" class="result"></div>
+    </div>
+
+    <!-- Maths Subject -->
+    <div class="card">
+      <h2>Maths</h2>
+      <label for="maths-total">Total sessions so far</label>
+      <input type="number" id="maths-total" placeholder="e.g. 40">
+      <label for="maths-attended">Sessions attended</label>
+      <input type="number" id="maths-attended" placeholder="e.g. 34">
+      <div id="maths-result" class="result"></div>
+    </div>
+
+    <!-- Web Dev Subject -->
+    <div class="card">
+      <h2>Web dev 101</h2>
+      <label for="webdev-total">Total sessions so far</label>
+      <input type="number" id="webdev-total" placeholder="e.g. 40">
+      <label for="webdev-attended">Sessions attended</label>
+      <input type="number" id="webdev-attended" placeholder="e.g. 34">
+      <div id="webdev-result" class="result"></div>
+    </div>
+  </div>
+
+  <button id="calc-btn">Calculate</button>
+
+  <script>
+    // Note to self: remember to check for NaN values later if user leaves things blank
+    
+    document.getElementById('calc-btn').addEventListener('click', function() {
+      // running calculations for all 3 subjects manually instead of writing a loop because it's only 3 cards lol
+      
+      // 1. ICP
+      calcSubject('icp-total', 'icp-attended', 'icp-result');
+      
+      // 2. Maths
+      calcSubject('maths-total', 'maths-attended', 'maths-result');
+      
+      // 3. Webdev
+      calcSubject('webdev-total', 'webdev-attended', 'webdev-result');
+    });
+
+    function calcSubject(totalId, attendedId, resultId) {
+      var total = parseInt(document.getElementById(totalId).value);
+      var attended = parseInt(document.getElementById(attendedId).value);
+      var resDiv = document.getElementById(resultId);
+
+      // basic validation check
+      if (isNaN(total) || isNaN(attended)) {
+        resDiv.innerHTML = "Please fill out both fields!";
+        resDiv.className = "result";
+        return;
+      }
+
+      if (total <= 0) {
+        resDiv.innerHTML = "Total can't be zero or negative dummy";
+        resDiv.className = "result danger";
+        return;
+      }
+
+      if (attended > total) {
+        resDiv.innerHTML = "Attended can't be more than total!";
+        resDiv.className = "result danger";
+        return;
+      }
+
+      var percentage = (attended / total) * 100;
+      var text = "Current: " + percentage.toFixed(1) + "%<br>";
+
+      // 75% logic 
+      if (percentage >= 75) {
+        // can afford to skip some classes
+        // formula to find how many classes can be skipped: (attended - 0.75 * total) / 0.75 -- wait let me double check this math later
+        var canSkip = Math.floor((attended - (0.75 * total)) / 0.75);
+        text += "<span class='safe'>You can skip " + canSkip + " classes safely!</span>";
+        resDiv.className = "result safe";
+      } else {
+        // need to attend classes
+        // formula: (0.75 * total - attended) / 0.25
+        var needToAttend = Math.ceil(((0.75 * total) - attended) / 0.25);
+        text += "<span class='danger'>Need to attend " + needToAttend + " more classes!</span>";
+        resDiv.className = "result danger";
+      }
+
+      resDiv.innerHTML = text;
+    }
+  </script>
+</body>
+</html>

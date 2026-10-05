@@ -1,0 +1,84 @@
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f2f2f2;
+  margin: 0;
+  padding: 20px;
+  text-align: center;
+}
+
+.sub {
+  margin-bottom: 20px;
+}
+
+.cards {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 15px;
+}
+
+.card {
+  background-color: white;
+  width: 250px;
+  padding: 15px;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.card h2 {
+  margin-top: 0;
+}
+
+label {
+  margin-top: 10px;
+  margin-bottom: 4px;
+}
+
+input {
+  padding: 12px;
+  font-size: 16px;
+  border: 1px solid #aaa;
+  border-radius: 4px;
+}
+
+button {
+  margin-top: 20px;
+  padding: 12px 40px;
+  font-size: 16px;
+  background-color: #333;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.result {
+  margin-top: 15px;
+  padding: 10px;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.safe {
+  background-color: #c8f7c5;
+  color: #1a5c16;
+}
+
+.danger {
+  background-color: #f7c5c5;
+  color: #7a1010;
+}
+
+.error {
+  background-color: #eee;
+  color: #333;
+}
+
+/* for phones */
+@media (max-width: 600px) {
+  .card {
+    width: 100%;
+  }
+}
